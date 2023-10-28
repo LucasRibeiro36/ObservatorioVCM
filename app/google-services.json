@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "151133178687",
+    "project_id": "observarioviolenciamulher",
+    "storage_bucket": "observarioviolenciamulher.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:151133178687:android:fd076011264e22fdd4618a",
+        "android_client_info": {
+          "package_name": "com.ifba.observatoriovcm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDD3m6E_JCurQt-2Cd3YqVCM9eYn2G-sJw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
