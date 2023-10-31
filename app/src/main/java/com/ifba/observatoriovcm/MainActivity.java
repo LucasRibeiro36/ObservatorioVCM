@@ -1,8 +1,13 @@
 package com.ifba.observatoriovcm;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
+import android.Manifest;
 import android.content.Intent;
 import android.location.LocationManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -31,7 +36,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ActivityCompat.requestPermissions( MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_NETWORK_STATE}, 1);
+        // verificar se tem conexão com a internet
         projectUtils = new ProjectUtils(MainActivity.this);
+        NetworkInfo networkInfo = projectUtils.getNetworkInfo();
+        if (networkInfo == null || !networkInfo.isConnected()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("Sem conexão com a internet");
+            builder.setMessage("Você precisa estar conectado à internet para usar o aplicativo");
+            builder.setPositiveButton("OK", null);
+            builder.show();
+        }
         buttonDenunciar = (Button) findViewById(R.id.buttonDenunciar);
         buttonvVerDenuncias = (Button) findViewById(R.id.buttonVerDenuncias);
         denunciaDao = new DenunciaDao();
@@ -73,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
                                 public void onAddressResult(String address) {
                                     if (address != null) {
                                         String endereco = address;
+                                        System.out.println("endereco: " + endereco + " descricao: " + descricao + " time: " + time + " situacao: " + situacao + " locations: " + locations);
                                         DenunciaModel denunciaModel = new DenunciaModel(descricao, time, locations, situacao, endereco);
                                         denunciaDao.adicionarDenuncia(denunciaModel);
                                         Toast.makeText(MainActivity.this, "Denúncia enviada com sucesso!", Toast.LENGTH_SHORT).show();
@@ -93,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onDenunciasRetrieved(List<DenunciaModel> denuncias) {
                         Intent intent = new Intent(MainActivity.this, MapsActivity.class);
                         intent.putExtra("denuncias", (ArrayList<DenunciaModel>) denuncias);
+                        System.out.println("teste");
+                        System.out.println(denuncias.get(0).getTipo());
                         startActivity(intent);
                     }
 

@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import androidx.core.content.ContextCompat;
 
@@ -109,6 +111,11 @@ public class ProjectUtils {
 
     public interface AndressCallback {
         void onAddressResult(String address);
+    }
+
+    public NetworkInfo getNetworkInfo() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return connectivityManager.getActiveNetworkInfo();
     }
 
 }

@@ -49,9 +49,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         ArrayList<DenunciaModel> denuncias = (ArrayList<DenunciaModel>) getIntent().getSerializableExtra("denuncias");
         for (DenunciaModel denuncia : denuncias) {
-            LatLng location = new LatLng(denuncia.getLocation().get(0), denuncia.getLocation().get(1));
-            mMap.addMarker(new MarkerOptions().position(location).title(denuncia.getTipo()));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+            if (denuncia.getLocation() != null && denuncia.getTipo() != null) {
+                LatLng location = new LatLng(denuncia.getLocation().get(0), denuncia.getLocation().get(1));
+                mMap.addMarker(new MarkerOptions().position(location).title(denuncia.getTipo()));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(-11.3042, -41.8558)));
+                //zoom para pegar a regiao toda
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(8.0f));
+            }
         }
     }
 }
