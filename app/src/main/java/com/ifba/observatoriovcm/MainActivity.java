@@ -15,21 +15,22 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.ifba.observatoriovcm.R;
 import com.ifba.observatoriovcm.dao.DenunciaDao;
 import com.ifba.observatoriovcm.model.DenunciaModel;
-import com.ifba.observatoriovcm.utils.ProjectUtils;
+import com.ifba.observatoriovcm.utils.ProjectHelper;
 import com.ifba.observatoriovcm.utils.SpinnerHelper;
 import com.ifba.observatoriovcm.view.MapsActivity;
+import com.ifba.observatoriovcm.view.NewDenunciaActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private Button buttonDenunciar, buttonvVerDenuncias;
+    private Button buttonDenunciar, buttonvVerDenuncias, buttonDenunciarOutroLocal;
     private Spinner spinnerTipoDenuncias;
     private String descricao;
     private LocationManager locationManager;
-    private ProjectUtils projectUtils;
+    private ProjectHelper projectUtils;
     private DenunciaDao denunciaDao;
 
     @Override
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ActivityCompat.requestPermissions( MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_NETWORK_STATE}, 1);
         // verificar se tem conexão com a internet
-        projectUtils = new ProjectUtils(MainActivity.this);
+        projectUtils = new ProjectHelper(MainActivity.this);
         NetworkInfo networkInfo = projectUtils.getNetworkInfo();
         if (networkInfo == null || !networkInfo.isConnected()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         }
         buttonDenunciar = (Button) findViewById(R.id.buttonDenunciar);
         buttonvVerDenuncias = (Button) findViewById(R.id.buttonVerDenuncias);
+        buttonDenunciarOutroLocal = (Button) findViewById(R.id.buttonDenunciarOutroLocal);
         denunciaDao = new DenunciaDao();
 
         // Set up the spinner and its selection listener
@@ -72,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Request location and handle the result in a callback
-                projectUtils.getLocation(new ProjectUtils.LocationCallback() {
+                projectUtils.getLocation(new ProjectHelper.LocationCallback() {
                     @Override
                     public void onLocationResult(List<Double> location) {
                         if (location != null && location.size() == 2) {
@@ -81,9 +83,9 @@ public class MainActivity extends AppCompatActivity {
                             List<Double> locations = new ArrayList<>();
                             locations.add(latitude);
                             locations.add(longitude);
-                            String time = ProjectUtils.getDate();
+                            String time = ProjectHelper.getDate();
                             String situacao = "Em Aberto";
-                            projectUtils.getAndress(new ProjectUtils.AndressCallback() {
+                            projectUtils.getAndress(new ProjectHelper.AndressCallback() {
                                 @Override
                                 public void onAddressResult(String address) {
                                     if (address != null) {
@@ -121,6 +123,14 @@ public class MainActivity extends AppCompatActivity {
                 });
                 //Intent intent = new Intent(MainActivity.this, MapsActivity.class);
                 //startActivity(intent);
+            }
+        });
+
+        buttonDenunciarOutroLocal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, NewDenunciaActivity.class);
+                startActivity(intent);
             }
         });
     }

@@ -24,9 +24,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-public class ProjectUtils {
+public class ProjectHelper {
     private Context context;
-    public ProjectUtils(Context context) {
+    public ProjectHelper(Context context) {
         this.context = context;
     }
 
@@ -116,6 +116,30 @@ public class ProjectUtils {
     public NetworkInfo getNetworkInfo() {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         return connectivityManager.getActiveNetworkInfo();
+    }
+
+    public void getGeocodeFromAndress(String andress, final LocationCallback callback) throws IOException {
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocationName(andress, 1);
+
+            if (!addresses.isEmpty()) {
+                double latitude = addresses.get(0).getLatitude();
+                double longitude = addresses.get(0).getLongitude();
+
+                List<Double> location = new ArrayList<>();
+                location.add(latitude);
+                location.add(longitude);
+
+                callback.onLocationResult(location);
+            } else {
+                callback.onLocationResult(null);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            callback.onLocationResult(null);
+        }
+
     }
 
 }
