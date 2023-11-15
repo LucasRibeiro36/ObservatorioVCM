@@ -8,21 +8,27 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 
 import androidx.core.content.ContextCompat;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import org.osmdroid.bonuspack.location.GeocoderNominatim;
+import org.osmdroid.util.GeoPoint;
+
 
 public class ProjectHelper {
     private Context context;
@@ -35,8 +41,11 @@ public class ProjectHelper {
         Date date = calendar.getTime();
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+        TimeZone timeZone = TimeZone.getTimeZone("America/Sao_Paulo");
+        sdf.setTimeZone(timeZone); // Configura o fuso horário para o horário brasileiro
         return sdf.format(date);
     }
+
 
     public void getLocation(final LocationCallback callback) {
         // Check if location permission is granted
@@ -84,22 +93,10 @@ public class ProjectHelper {
                         double latitude = lastLocation.getLatitude();
                         double longitude = lastLocation.getLongitude();
 
-                        // Agora, você pode chamar um serviço de geocodificação para obter o endereço.
-                        // Aqui está um exemplo de como usar a geocodificação do Google.
-                        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-                        try {
-                            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-
-                            if (!addresses.isEmpty()) {
-                                String addressLine = addresses.get(0).getAddressLine(0); // Obtém a primeira linha de endereço
-                                callback.onAddressResult(addressLine);
-                            } else {
-                                callback.onAddressResult("Endereço não encontrado");
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            callback.onAddressResult("Erro ao obter o endereço");
-                        }
+                        // Realize a geocodificação reversa para obter o endereço a partir das coordenadas
+                        GeoPoint geoPoint = new GeoPoint(latitude, longitude);
+                        GeocodeToAndressTask reverseGeocodingTask = new GeocodeToAndressTask(context, geoPoint, callback);
+                        reverseGeocodingTask.execute();
                     }
                 }
             });
@@ -108,6 +105,7 @@ public class ProjectHelper {
             // Você pode solicitar a permissão ou tratar de acordo com sua lógica.
         }
     }
+
 
     public interface AndressCallback {
         void onAddressResult(String address);
@@ -118,28 +116,8 @@ public class ProjectHelper {
         return connectivityManager.getActiveNetworkInfo();
     }
 
-    public void getGeocodeFromAndress(String andress, final LocationCallback callback) throws IOException {
-        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-        try {
-            List<Address> addresses = geocoder.getFromLocationName(andress, 1);
-
-            if (!addresses.isEmpty()) {
-                double latitude = addresses.get(0).getLatitude();
-                double longitude = addresses.get(0).getLongitude();
-
-                List<Double> location = new ArrayList<>();
-                location.add(latitude);
-                location.add(longitude);
-
-                callback.onLocationResult(location);
-            } else {
-                callback.onLocationResult(null);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            callback.onLocationResult(null);
-        }
-
+    public void getGeocodeFromAddress(final String address, final LocationCallback callback) {
+        new GeocodeFromAddressTask(context, address, callback).execute();
     }
 
 }

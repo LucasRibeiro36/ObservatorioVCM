@@ -16,6 +16,7 @@ import com.ifba.observatoriovcm.utils.SpinnerHelper;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 public class NewDenunciaActivity extends AppCompatActivity {
     Button voltarButton, enviarButton;
@@ -43,23 +44,22 @@ public class NewDenunciaActivity extends AppCompatActivity {
                 editTextTextPostalAddress.setError("Campo obrigatório");
                 return;
             } else {
-                try {
-                    projectHelper.getGeocodeFromAndress(endereco, new ProjectHelper.LocationCallback() {
-                        @Override
-                        public void onLocationResult(List<Double> location) {
-                            DenuncianteModel denuncianteModel = new DenuncianteModel();
-                            denuncianteModel.setEndereco(endereco);
-                            denuncianteModel.setLocation(location);
-                            denuncianteModel.setTimestamp(projectHelper.getDate());
-                            denuncianteModel.setTipo(spinnerTipoDenuncia.getSelectedItem().toString());
-                            denuncianteModel.setSituacao("Em andamento");
-                            denunciaDao.adicionarDenuncia(denuncianteModel);
-                            finish();
-                        }
-                    });
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                projectHelper.getGeocodeFromAddress(endereco, new ProjectHelper.LocationCallback() {
+                    @Override
+                    public void onLocationResult(List<Double> location) {
+                        DenuncianteModel denuncianteModel = new DenuncianteModel();
+                        denuncianteModel.setEndereco(endereco);
+                        location.set(0, location.get(0) + (new Random().nextDouble() * 2 - 1) * 0.0001);
+                        location.set(1, location.get(1) + (new Random().nextDouble() * 2 - 1) * 0.0001);
+                        denuncianteModel.setLocation(location);
+                        denuncianteModel.setTimestamp(projectHelper.getDate());
+                        denuncianteModel.setTipo("Denuncia por Texto");
+                        denuncianteModel.setDescricao(spinnerTipoDenuncia.getSelectedItem().toString());
+                        denuncianteModel.setSituacao("Em andamento");
+                        denunciaDao.adicionarDenuncia(denuncianteModel);
+                        finish();
+                    }
+                });
             }
         });
     }

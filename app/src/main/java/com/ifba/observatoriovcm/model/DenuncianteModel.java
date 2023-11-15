@@ -7,8 +7,8 @@ public class DenuncianteModel extends DenunciaModel implements Serializable {
 
     private List<Double> locationDenunciante;
 
-    public DenuncianteModel(String tipo, String timestamp, List<Double> location, String situacao, String endereco, List<Double> locationDenunciante) {
-        super(tipo, timestamp, location, situacao, endereco);
+    public DenuncianteModel(String tipo, String timestamp, List<Double> location, String situacao, String endereco, String descricao, List<Double> locationDenunciante) {
+        super(tipo, timestamp, location, situacao, endereco, descricao);
         this.locationDenunciante = locationDenunciante;
     }
 

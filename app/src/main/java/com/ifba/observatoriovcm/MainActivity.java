@@ -90,8 +90,9 @@ public class MainActivity extends AppCompatActivity {
                                 public void onAddressResult(String address) {
                                     if (address != null) {
                                         String endereco = address;
+                                        String tipo = "Denuncia por GPS";
                                         System.out.println("endereco: " + endereco + " descricao: " + descricao + " time: " + time + " situacao: " + situacao + " locations: " + locations);
-                                        DenunciaModel denunciaModel = new DenunciaModel(descricao, time, locations, situacao, endereco);
+                                        DenunciaModel denunciaModel = new DenunciaModel(tipo, time, locations, situacao, endereco, descricao);
                                         denunciaDao.adicionarDenuncia(denunciaModel);
                                         Toast.makeText(MainActivity.this, "Denúncia enviada com sucesso!", Toast.LENGTH_SHORT).show();
                                     }
@@ -106,23 +107,8 @@ public class MainActivity extends AppCompatActivity {
         buttonvVerDenuncias.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                denunciaDao.listarDenuncias(new DenunciaDao.DenunciasCallback() {
-                    @Override
-                    public void onDenunciasRetrieved(List<DenunciaModel> denuncias) {
-                        Intent intent = new Intent(MainActivity.this, MapsActivity.class);
-                        intent.putExtra("denuncias", (ArrayList<DenunciaModel>) denuncias);
-                        System.out.println("teste");
-                        System.out.println(denuncias.get(0).getTipo());
-                        startActivity(intent);
-                    }
-
-                    @Override
-                    public void onDenunciasRetrievalError(Exception error) {
-
-                    }
-                });
-                //Intent intent = new Intent(MainActivity.this, MapsActivity.class);
-                //startActivity(intent);
+                Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                startActivity(intent);
             }
         });
 

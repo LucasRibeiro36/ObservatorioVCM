@@ -12,16 +12,26 @@ public class DenunciaModel implements Serializable {
     private List<Double> location;
     private String situacao;
     private String endereco;
+    private String descricao;
 
-    public DenunciaModel(String tipo, String timestamp, List<Double> location, String situacao, String endereco) {
+    public DenunciaModel(String tipo, String timestamp, List<Double> location, String situacao, String endereco, String descricao) {
         this.tipo = tipo;
         this.timestamp = timestamp;
         this.location = location;
         this.situacao = situacao;
         this.endereco = endereco;
+        this.descricao = descricao;
     }
 
     public DenunciaModel() {
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
     public String getEndereco() {
